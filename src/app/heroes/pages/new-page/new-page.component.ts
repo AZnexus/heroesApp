@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Hero, Publisher } from '../../interfaces/hero.interface';
 import { HeroesService } from '../../services/heroes.service';
 import { switchMap } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-new-page',
@@ -29,7 +30,12 @@ export class NewPageComponent implements OnInit {
     {id: 'Marvel Comics', desc: 'Marvel - Comics'}
   ];
 
-  constructor(private heroesService: HeroesService, private activatedRoute: ActivatedRoute, private router: Router) {}
+  constructor(
+    private heroesService: HeroesService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private snackbar: MatSnackBar
+  ) {}
 
   get currentHero(): Hero {
     const hero = this.heroForm.value as Hero; // Tracta el value com un Hero (like a casting??)
@@ -56,14 +62,19 @@ export class NewPageComponent implements OnInit {
     if (this.currentHero.id) {
       this.heroesService.updateHero(this.currentHero)
         .subscribe(hero => {
-          //TODO: Mostrar snackbar
+          this.showSnackbar(`${hero.superhero} updated`);
         });
         return;
     }
 
     this.heroesService.addHero(this.currentHero)
       .subscribe(hero => {
-        //TODO: Mostrar snackbar y navegar a /heroes/edit/ hero.id
+        this.router.navigate(['/heroes/edit', hero.id]);
+        this.showSnackbar(`${hero.superhero} added`);
       });
+  }
+
+  showSnackbar(message: string):void {
+    this.snackbar.open(message, 'done', {duration: 2500});
   }
 }
