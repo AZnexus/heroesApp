@@ -40,8 +40,8 @@ export class HeroesService {
   deleteHeroById(id: string): Observable<boolean> {
     return this.http.delete(`${this.baseUrl}/heroes/${id}`)
       .pipe(
+        map( resp => true),
         catchError( err => of(false)),
-        map( resp => true) // Si NO retorna error, encara que la resposta vingui amb algun altre cosa, retornarà un true
       );
   }
 }
